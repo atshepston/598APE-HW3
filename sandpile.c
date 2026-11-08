@@ -73,9 +73,11 @@ static void render(char *filename) {
 }
 
 static void stabilize() {
-  int changed = 0;
+  const int width = N;
   int *lo = malloc(N * sizeof(int));
   int *hi = malloc(N * sizeof(int));
+  size_t stride = (size_t)N + 2;
+  int (*q)[stride] = calloc(stride, sizeof *q);
   int N2 = (N / 2) * (N / 2);
   for (int i = 0; i < N; ++i) {
     lo[i] = N;
@@ -88,26 +90,28 @@ static void stabilize() {
       }
     }
   }
-  do {
-    changed = 0;
-    for (int i = N - 1; i >= 0; --i) {
-      for (int j = hi[i]; j >= lo[i]; --j) {
-        if (grid[i][j] < 4)
-          continue;
-        changed = 1; // topple it
-        int numDecs = grid[i][j] / 4;
-        grid[i][j] -= 4 * numDecs;
-        if (i > 0)
-          grid[i - 1][j] += numDecs;
-        if (j > 0)
-          grid[i][j - 1] += numDecs;
-        if (i < N - 1)
-          grid[i + 1][j] += numDecs;
-        if (j < N - 1)
-          grid[i][j + 1] += numDecs;
+  while (1) {
+    int changed = 0;
+    for (int i = 0; i < width; ++i) {
+      for (int j = lo[i]; j <= hi[i]; ++j) {
+        int topples = grid[i][j] / 4;
+        q[i + 1][j + 1] = topples;
+        if (topples) {
+          changed = 1;
+        }
       }
     }
-  } while (changed);
+    if (!changed)
+      break;
+
+    for (int i = 0; i < width; ++i) {
+      for (int j = 0; j < width; ++j) {
+        grid[i][j] = grid[i][j] - 4 * q[i + 1][j + 1] + q[i][j + 1] +
+                     q[i + 2][j + 1] + q[i + 1][j] + q[i + 1][j + 2];
+      }
+    }
+  }
+  free(q);
   free(lo);
   free(hi);
 }
