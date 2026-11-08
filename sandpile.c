@@ -90,8 +90,8 @@ static void stabilize() {
   }
   do {
     changed = 0;
-    for (int i = 0; i < N; ++i) {
-      for (int j = lo[i]; j <= hi[i]; ++j) {
+    for (int i = N - 1; i >= 0; --i) {
+      for (int j = hi[i]; j >= lo[i]; --j) {
         if (grid[i][j] < 4)
           continue;
         changed = 1; // topple it
