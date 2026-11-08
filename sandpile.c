@@ -95,15 +95,16 @@ static void stabilize() {
         if (grid[i][j] < 4)
           continue;
         changed = 1; // topple it
-        grid[i][j] -= 4;
+        int numDecs = grid[i][j] / 4;
+        grid[i][j] -= 4 * numDecs;
         if (i > 0)
-          grid[i - 1][j]++;
+          grid[i - 1][j] += numDecs;
         if (j > 0)
-          grid[i][j - 1]++;
+          grid[i][j - 1] += numDecs;
         if (i < N - 1)
-          grid[i + 1][j]++;
+          grid[i + 1][j] += numDecs;
         if (j < N - 1)
-          grid[i][j + 1]++;
+          grid[i][j + 1] += numDecs;
       }
     }
   } while (changed);
