@@ -76,10 +76,11 @@ static void stabilize() {
   int changed = 0;
   do {
     changed = 0;
+    int N2 = (N / 2) * (N / 2);
     for (int i = 0; i < N; ++i) {
+      int iN2 = (i - N / 2) * (i - N / 2);
       for (int j = 0; j <= MAX(i, N - 1 - i); ++j) {
-        if ((i - N / 2) * (i - N / 2) + (j - N / 2) * (j - N / 2) <=
-            (N / 2) * (N / 2)) {
+        if (iN2 + (j - N / 2) * (j - N / 2) <= N2) {
           if (grid[i][j] < 4)
             continue;
           changed = 1; // topple it
