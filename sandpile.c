@@ -107,6 +107,8 @@ static void stabilize() {
       }
     }
   } while (changed);
+  free(lo);
+  free(hi);
 }
 
 void find_identity() {
