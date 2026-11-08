@@ -92,6 +92,7 @@ static void stabilize() {
   }
   while (1) {
     int changed = 0;
+#pragma omp parallel for schedule(static) reduction(| : changed)
     for (int i = 0; i < width; ++i) {
       for (int j = lo[i]; j <= hi[i]; ++j) {
         int topples = grid[i][j] / 4;
@@ -104,6 +105,7 @@ static void stabilize() {
     if (!changed)
       break;
 
+#pragma omp parallel for schedule(static)
     for (int i = 0; i < width; ++i) {
       for (int j = 0; j < width; ++j) {
         grid[i][j] = grid[i][j] - 4 * q[i + 1][j + 1] + q[i][j + 1] +
