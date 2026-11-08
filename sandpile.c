@@ -74,26 +74,36 @@ static void render(char *filename) {
 
 static void stabilize() {
   int changed = 0;
+  int *lo = malloc(N * sizeof(int));
+  int *hi = malloc(N * sizeof(int));
+  int N2 = (N / 2) * (N / 2);
+  for (int i = 0; i < N; ++i) {
+    lo[i] = N;
+    hi[i] = -1; // empty interval initially
+    int iN2 = (i - N / 2) * (i - N / 2);
+    for (int j = 0; j <= MAX(i, N - 1 - i); ++j) {
+      if (iN2 + (j - N / 2) * (j - N / 2) <= N2) {
+        lo[i] = MIN(lo[i], j);
+        hi[i] = j;
+      }
+    }
+  }
   do {
     changed = 0;
-    int N2 = (N / 2) * (N / 2);
     for (int i = 0; i < N; ++i) {
-      int iN2 = (i - N / 2) * (i - N / 2);
-      for (int j = 0; j <= MAX(i, N - 1 - i); ++j) {
-        if (iN2 + (j - N / 2) * (j - N / 2) <= N2) {
-          if (grid[i][j] < 4)
-            continue;
-          changed = 1; // topple it
-          grid[i][j] -= 4;
-          if (i > 0)
-            grid[i - 1][j]++;
-          if (j > 0)
-            grid[i][j - 1]++;
-          if (i < N - 1)
-            grid[i + 1][j]++;
-          if (j < N - 1)
-            grid[i][j + 1]++;
-        }
+      for (int j = lo[i]; j <= hi[i]; ++j) {
+        if (grid[i][j] < 4)
+          continue;
+        changed = 1; // topple it
+        grid[i][j] -= 4;
+        if (i > 0)
+          grid[i - 1][j]++;
+        if (j > 0)
+          grid[i][j - 1]++;
+        if (i < N - 1)
+          grid[i + 1][j]++;
+        if (j < N - 1)
+          grid[i][j + 1]++;
       }
     }
   } while (changed);
