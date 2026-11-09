@@ -43,3 +43,35 @@ For an optional, ungraded challenge, see how large a sandpile you can compute
 on the course VMs and report the grid size and runtime. There is no prescribed
 upper limit on `N` for this challenge.
 
+## Artifact
+
+Each commit contains the cumulative changes through that optimization:
+
+| Commit | Optimization |
+|---|---|
+| `49ca01d` | Original baseline |
+| `32fcbfd` | Hoisted geometry calculations |
+| `e3f1574` | Precomputed column ranges |
+| `a9d852c` | Batched toppling |
+| `03bf12b` | Reverse traversal |
+| `f8094b1` | Two-pass gather updates |
+| `ee76392` | OpenMP parallelization |
+| `4cb6288` | Native CPU instructions |
+
+Select a stage, rebuild, and measure elapsed wall time using GNU Time:
+
+```bash
+git checkout <commit>
+make all
+/usr/bin/time -f '%e' ./sandpile.exe 401
+/usr/bin/time -f '%e' ./sandpile.exe 1001
+```
+
+Requirements: Git, Make, GCC with OpenMP support, and GNU Time. Timing includes
+initialization, stabilization, and PNG generation, but excludes compilation.
+Reported results use the minimum of three runs for `401` and one run for `1001`.
+Overall speedup is the baseline time divided by the optimized time at the same size.
+
+Each run writes `identity.png`. Save the original baseline image separately for
+each size, then compare later outputs byte for byte using, for example,
+`cmp baseline-401.png identity.png`.
